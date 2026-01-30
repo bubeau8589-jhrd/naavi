@@ -1104,25 +1104,25 @@
         // }
 
         function updateConnectionUI() {
-            const btnMicrobit = document.getElementById('btnConnectMicrobit');
-            const statusMicrobit = document.getElementById('statusMicrobit');
+            // const btnMicrobit = document.getElementById('btnConnectMicrobit');
+            // const statusMicrobit = document.getElementById('statusMicrobit');
 
-            if (bleConnected) {
-                btnMicrobit.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                    Micro:bit Connected`;
-                if (statusMicrobit) {
-                    statusMicrobit.innerHTML = 'Micro:bit: <span style="color:var(--success)">Connected</span>';
-                }
-            } else {
-                btnMicrobit.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10v4H7zm0 16h10v4H7zM3 8h4v8H3zm14 0h4v8H3z" /></svg>
-                    Connect Micro:bit`;
-                if (statusMicrobit) {
-                    statusMicrobit.textContent = "Micro:bit: Not Connected";
-                    statusMicrobit.style.color = "rgba(255, 255, 255, 0.5)";
-                }
-            }
+            // if (bleConnected) {
+            //     btnMicrobit.innerHTML = `
+            //         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            //         Micro:bit Connected`;
+            //     if (statusMicrobit) {
+            //         statusMicrobit.innerHTML = 'Micro:bit: <span style="color:var(--success)">Connected</span>';
+            //     }
+            // } else {
+            //     btnMicrobit.innerHTML = `
+            //         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10v4H7zm0 16h10v4H7zM3 8h4v8H3zm14 0h4v8H3z" /></svg>
+            //         Connect Micro:bit`;
+            //     if (statusMicrobit) {
+            //         statusMicrobit.textContent = "Micro:bit: Not Connected";
+            //         statusMicrobit.style.color = "rgba(255, 255, 255, 0.5)";
+            //     }
+            // }
 
             const btnArduino = document.getElementById('btnConnectArduino');
             const statusArduino = document.getElementById('statusArduino');
