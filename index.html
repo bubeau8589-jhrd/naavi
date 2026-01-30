@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,8 +50,8 @@
         .app {
             width: 100%;
             max-width: 1400px;
-            height: auto;
-            max-height: 95vh;
+            height: 90vh;
+            /* Reduced from 95vh for more vertical space */
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.005));
             border-radius: var(--radius);
             box-shadow: var(--shadow);
@@ -87,7 +86,7 @@
 
         .main-title {
             grid-column: 1 / -1;
-            margin: 20px 0;
+            margin: 15px 0;
             font-size: 28px;
             font-weight: 800;
             background: var(--accent);
@@ -259,7 +258,8 @@
 
         .result-container {
             width: 100%;
-            aspect-ratio: 1 / 1;
+            flex: 1;
+            min-height: 200px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -380,6 +380,64 @@
             transform: scale(1.05);
         }
 
+        .center-focus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid rgba(0, 195, 255, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 0 2px rgba(0, 195, 255, 0.2),
+                inset 0 0 0 2px rgba(0, 195, 255, 0.2);
+            animation: pulse-focus 2s ease-in-out infinite;
+        }
+
+        .center-focus::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0, 195, 255, 0.8);
+            border-radius: 50%;
+            background: rgba(0, 195, 255, 0.2);
+        }
+
+        .center-focus::after {
+            content: 'Place object here';
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(0, 195, 255, 0.9);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 12px;
+            border-radius: 12px;
+            white-space: nowrap;
+            backdrop-filter: blur(4px);
+        }
+
+        @keyframes pulse-focus {
+
+            0%,
+            100% {
+                opacity: 0.6;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+        }
+
         @media (max-width: 1100px) {
             .app {
                 grid-template-columns: 1fr;
@@ -436,22 +494,19 @@
 
                 <div class="section-card card-config">
                     <div class="section-title">Configuration</div>
-                    <div style="display:flex; gap:10px; align-items: flex-start;">
-                        <div style="flex:1; display:flex; flex-direction:column; align-items:center;">
-                            <input type="password" id="apiKeyInput" placeholder="Gemini API Key"
-                                style="text-align:center;">
-                            <div id="keyStatus"
-                                style="font-size:14px; font-weight:600; margin-top:8px; min-height:1.2em;"></div>
-                        </div>
-                        <button class="btn" onclick="verifyKey()"
-                            style="width:auto; padding:14px 20px; height: 50px;">Check</button>
+                    <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
+                        <input type="password" id="apiKeyInput" placeholder="Gemini API Key"
+                            style="text-align:center; width:100%;">
+
+                        <button class="btn" onclick="verifyKey()" style="width:100%; padding:12px;">Check</button>
+
+                        <div id="keyStatus"
+                            style="font-size:14px; font-weight:600; text-align:center; min-height:1.2em;"></div>
                     </div>
 
-                    <select id="modelSelect">
-                        <option value="gemini-2.5-flash-lite" selected>Gemini 2.5 Flash Lite</option>
-                        <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-                    </select>
+
+
+
                 </div>
             </div>
 
@@ -461,6 +516,7 @@
                     <video id="videoElement" autoplay playsinline></video>
                     <canvas id="canvasElement" style="display:none;"></canvas>
                     <div class="flash" id="flash"></div>
+                    <div class="center-focus"></div>
                     <div class="overlay-instruction">Press SPACE to Capture</div>
                     <div style="position:absolute; top:20px; left:20px; display:flex; align-items:center; gap:10px;">
                         <div class="feed-dot" id="feedDot"></div>
@@ -468,9 +524,12 @@
                     </div>
                 </div>
 
-                <select id="cameraSelect" style="margin-top: 20px; max-width: 400px; cursor: pointer;">
-                    <option value="" disabled selected>Loading cameras...</option>
-                </select>
+                <div style="width:50%; margin:15px auto 0 auto;">
+                    <select id="cameraSelect" onchange="changeCamera()"
+                        style="text-align:center; background:rgba(0,0,0,0.5); border-color:rgba(255,255,255,0.1); padding: 14px 18px; font-size: 15px;">
+                        <option value="" disabled selected>Loading Cameras...</option>
+                    </select>
+                </div>
             </div>
 
             <div class="col-right">
@@ -484,6 +543,22 @@
                 <div class="result-container" id="resultBox">
                     <div style="opacity:0.4; font-size:18px;">Ready to Scan</div>
                 </div>
+
+                <div class="section-card" style="margin-top:15px; padding:15px;">
+                    <div class="section-title" style="margin-bottom:10px;">Auto-Scanner</div>
+                    <div class="btn-group">
+                        <button class="btn" onclick="toggleVisualAuto()" id="btnVisualAuto">
+                            <span class="status-dot" id="visualAutoDot"></span>
+                            Visual Trigger: OFF
+                        </button>
+                        <button class="btn" onclick="calibrateBackground()" id="btnCalibrate"
+                            style="display:none; background:rgba(255,255,255,0.1); border:1px dashed rgba(255,255,255,0.2);">
+                            📸 Calibrate Empty Plate
+                        </button>
+                    </div>
+                    <div id="visualStatus"
+                        style="font-size:12px; color:rgba(255,255,255,0.5); text-align:center; margin-top:8px;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -495,51 +570,9 @@
         const resultBox = document.getElementById('resultBox');
         const apiKeyInput = document.getElementById('apiKeyInput');
         const feedDot = document.getElementById('feedDot');
-        const cameraSelect = document.getElementById('cameraSelect');
 
         let stream = null;
         let isProcessing = false;
-
-        async function getCameras() {
-            try {
-                // Request permission first to get labels
-                await navigator.mediaDevices.getUserMedia({ video: true });
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const videoDevices = devices.filter(device => device.kind === 'videoinput');
-
-                cameraSelect.innerHTML = '';
-                videoDevices.forEach((device, index) => {
-                    const option = document.createElement('option');
-                    option.value = device.deviceId;
-                    option.text = device.label || `Camera ${index + 1}`;
-                    cameraSelect.appendChild(option);
-                });
-
-                if (videoDevices.length > 0) {
-                    // If we have an active stream, select that device in the dropdown
-                    if (stream) {
-                        const currentTrack = stream.getVideoTracks()[0];
-                        const text = currentTrack.label;
-                        // Try to match by label since track.getSettings().deviceId might be masked
-                        for (let i = 0; i < cameraSelect.options.length; i++) {
-                            if (cameraSelect.options[i].text === text) {
-                                cameraSelect.selectedIndex = i;
-                                break;
-                            }
-                        }
-                    } else {
-                        startCamera(videoDevices[0].deviceId);
-                    }
-                } else {
-                    const option = document.createElement('option');
-                    option.text = "No cameras found";
-                    cameraSelect.appendChild(option);
-                }
-            } catch (err) {
-                console.error("Error enumerating devices:", err);
-                cameraSelect.innerHTML = '<option>Error loading cameras</option>';
-            }
-        }
 
         async function startCamera(deviceId = null) {
             if (stream) {
@@ -550,14 +583,11 @@
                 video: {
                     width: { ideal: 1280 },
                     height: { ideal: 720 },
-                    deviceId: deviceId ? { exact: deviceId } : undefined
+                    // Use specific ID if provided, otherwise prefer environment (rear)
+                    deviceId: deviceId ? { exact: deviceId } : undefined,
+                    facingMode: deviceId ? undefined : "environment"
                 }
             };
-
-            // If no specific device requested, prefer environment facing
-            if (!deviceId) {
-                constraints.video.facingMode = "environment";
-            }
 
             try {
                 stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -567,27 +597,66 @@
                     feedDot.classList.add('active');
                 };
 
+                // Refresh list to show correct labels (now that we have permission)
+                await getCameras();
+
             } catch (err) {
                 console.error("Camera error:", err);
                 feedDot.classList.remove('active');
 
-                // Fallback attempt if specific request failed
-                if (deviceId) {
-                    console.warn("Retrying with default camera...");
-                    startCamera(null);
-                    return;
+                if (err.name === 'OverconstrainedError') {
+                    // Fallback if specific device fails
+                    console.log("Retrying with default constraints...");
+                    startCamera();
+                } else {
+                    alert("Could not access camera. Please allow permissions.");
                 }
-
-                alert("Could not access camera. Please allow permissions.");
             }
         }
 
-        cameraSelect.addEventListener('change', (e) => {
-            startCamera(e.target.value);
-        });
+        async function getCameras() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                const select = document.getElementById('cameraSelect');
 
-        // Initialize
-        getCameras();
+                // Keep the currently selected value if it exists
+                const currentVal = select.value;
+                select.innerHTML = '<option value="" disabled>Select Camera</option>';
+
+                videoDevices.forEach((device, index) => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    // Clean Name: Remove (Hex IDs) or [Brackets] at the end
+                    let cleanName = device.label || `Camera ${index + 1}`;
+                    cleanName = cleanName.replace(/\s*\(.*?\)\s*$/, '').replace(/\s*\[.*?\]\s*$/, '');
+
+                    option.text = cleanName;
+                    select.appendChild(option);
+                });
+
+                // Try to match the current stream to the dropdown
+                if (stream) {
+                    const currentTrack = stream.getVideoTracks()[0];
+                    const settings = currentTrack.getSettings();
+                    if (settings.deviceId) {
+                        select.value = settings.deviceId;
+                    }
+                }
+            } catch (err) {
+                console.error("Error listing cameras:", err);
+            }
+        }
+
+        function changeCamera() {
+            const select = document.getElementById('cameraSelect');
+            if (select.value) {
+                startCamera(select.value);
+            }
+        }
+
+        // Initialize camera on page load
+        startCamera();
 
 
         document.addEventListener('keydown', (e) => {
@@ -605,7 +674,7 @@
 
             isProcessing = true;
             const ctx = canvas.getContext('2d');
-            const MAX_HEIGHT = 128; // Increased from 96px for better accuracy (e.g. Remote vs Phone)
+            const MAX_HEIGHT = 192; // Optimized for speed while maintaining accuracy
             const scale = Math.min(1, MAX_HEIGHT / video.videoHeight);
 
             canvas.width = video.videoWidth * scale;
@@ -615,13 +684,24 @@
             resultBox.innerHTML = '<div class="loading-spinner"></div><div style="margin-top:20px; color:var(--muted); font-size:16px; font-weight:600;">Analyzing...</div>';
 
             try {
-                // JPEG quality reduced to 0.3 for faster upload. Model is robust to compression.
-                const base64Image = canvas.toDataURL('image/jpeg', 0.3).split(',')[1];
-                const model = document.getElementById('modelSelect').value;
+                // JPEG quality optimized for speed (0.4 = fast upload, good enough quality)
+                const base64Image = canvas.toDataURL('image/jpeg', 0.4).split(',')[1];
+                const model = "gemini-2.5-flash-lite";
                 const apiKey = apiKeyInput.value.trim();
 
-                // Clear prompt to ensure accurate ID
-                const prompt = "Identify this object accurately. Return ONLY: Item :: Category. Categories: Wet, Dry, E-Waste, Medical. If unknown, use 'Unknown'. No sentences.";
+                // Optimized prompt for speed - concise but clear
+                const prompt = `Focus ONLY on the object in the CENTER/MIDDLE of the image.
+
+                Classify the object into one of these 5 categories ONLY:
+                1. WET (Food, vegetables, fruits, organic waste, flowers)
+                2. DRY (Paper, cardboard, plastic, metal, glass, cloth, wood)
+                3. E-WASTE (Electronics, batteries, phones, chargers, bulbs)
+                4. MEDICAL (Medicines, syringes, bandages, masks, pills)
+                5. UNKNOWN (Human hands, people, faces, animals, or items not matching the above)
+                CRITICAL RULES:
+                - If you see a HAND or PERSON, the Category MUST be 'UNKNOWN'.
+                Format: [Item] :: [Category]
+                Example: Hand :: Unknown`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
                     method: 'POST',
@@ -634,8 +714,10 @@
                             ]
                         }],
                         generationConfig: {
-                            temperature: 0.1,
-                            maxOutputTokens: 20
+                            temperature: 0.3,
+                            maxOutputTokens: 15,
+                            topP: 0.8,
+                            topK: 20
                         }
                     })
                 });
@@ -651,11 +733,23 @@
 
             } catch (err) {
                 console.error(err);
-                resultBox.innerHTML = `<div style="color:var(--error); font-size:14px;">Error: ${err.message}</div>`;
+
+                let displayError = `Error: ${err.message}`;
+                const msg = err.message.toLowerCase();
+
+                if (msg.includes("quota") || msg.includes("exceeded") || msg.includes("429")) {
+                    displayError = `<span style="font-size:24px;">⏳ Quota Expired</span><br><span style="font-size:14px; opacity:0.7">Please try again later</span>`;
+                } else if (msg.includes("key") || msg.includes("valid")) {
+                    displayError = `<span style="font-size:24px;">🔑 Invalid Key</span><br><span style="font-size:14px; opacity:0.7">Check your API Key</span>`;
+                }
+
+                resultBox.innerHTML = `<div style="color:var(--error); font-size:16px; font-weight:bold; text-align:center;">${displayError}</div>`;
             }
 
             isProcessing = false;
         }
+
+        let isSorting = false;
 
         function displayResult(text) {
             let item = "Unknown Item";
@@ -693,25 +787,97 @@
             item = item.replace(/^(Item|Object)[:\s]*/i, '').trim();
             category = category.replace(/^(Category|Class)[:\s]*/i, '').trim();
 
+            let hardwareCommand = "unknown";
+            let soundFile = "";
+            const lowerCat = category.toLowerCase();
+
+            if (lowerCat.includes("wet") || lowerCat.includes("organic")) {
+                hardwareCommand = "wet";
+                soundFile = "wet_waste.mp3";
+            } else if (lowerCat.includes("dry") || lowerCat.includes("recyclable")) {
+                hardwareCommand = "dry";
+                soundFile = "dry_waste.mp3";
+            } else if (lowerCat.includes("e-waste") || lowerCat.includes("electronic")) {
+                hardwareCommand = "e-waste";
+                soundFile = "e-waste.mp3";
+            } else if (lowerCat.includes("medical") || lowerCat.includes("sanitary")) {
+                hardwareCommand = "medical";
+                soundFile = "med_waste.mp3";
+            }
+
+            // 1. Display result
             resultBox.innerHTML = `
                 <div class="result-title-text">${item}</div>
                 <div class="result-category">${category}</div>
             `;
 
-            let hardwareCommand = "unknown";
-            const lowerCat = category.toLowerCase();
+            // 2. Send to Arduino
+            sendToDevice(hardwareCommand);
 
-            if (lowerCat.includes("wet") || lowerCat.includes("organic")) {
-                hardwareCommand = "wet";
-            } else if (lowerCat.includes("dry") || lowerCat.includes("recyclable")) {
-                hardwareCommand = "dry";
-            } else if (lowerCat.includes("e-waste") || lowerCat.includes("electronic")) {
-                hardwareCommand = "e-waste";
-            } else if (lowerCat.includes("medical") || lowerCat.includes("sanitary")) {
-                hardwareCommand = "medical";
+            // 3. Play sound
+            if (soundFile) {
+                playSound(soundFile);
             }
 
-            sendToDevice(hardwareCommand);
+            // 4. Pause Visual Detection for Servo Mechanism (Fix for double triggering)
+            if (visualAutoEnabled) {
+                isSorting = true;
+                const visualStatus = document.getElementById('visualStatus');
+                if (visualStatus) {
+                    visualStatus.innerHTML = "<span style='color:var(--warning)'>⚠️ Mechanism Active... Paused</span>";
+                }
+
+                // Assume 6 seconds for the dumper to rotate and come back
+                setTimeout(() => {
+                    isSorting = false;
+                    isObjectDetected = false; // Reset lock
+                    if (visualStatus) visualStatus.textContent = "Resuming scan...";
+                }, 6000);
+            }
+        }
+
+        let audioQueue = [];
+        let isAudioPlaying = false;
+
+        function playSound(filename) {
+            audioQueue.push(filename);
+            processAudioQueue();
+        }
+
+        function processAudioQueue() {
+            if (isAudioPlaying || audioQueue.length === 0) return;
+
+            const filename = audioQueue.shift();
+            isAudioPlaying = true;
+
+            try {
+                const audio = new Audio(filename);
+
+                audio.onended = () => {
+                    console.log("Audio finished. Waiting 1s...");
+                    // 1 second gap before next sound
+                    setTimeout(() => {
+                        isAudioPlaying = false;
+                        processAudioQueue();
+                    }, 1000);
+                };
+
+                audio.onerror = (e) => {
+                    console.error("Audio error:", e);
+                    isAudioPlaying = false;
+                    processAudioQueue();
+                };
+
+                audio.play().catch(err => {
+                    console.error("Audio playback error:", err);
+                    isAudioPlaying = false;
+                    processAudioQueue();
+                });
+            } catch (err) {
+                console.error("Audio creation error:", err);
+                isAudioPlaying = false;
+                processAudioQueue();
+            }
         }
 
         function resetResult() {
@@ -818,6 +984,19 @@
                                         console.log("Received 0 from Arduino. Auto-capturing...");
                                         captureAndAnalyze();
                                     }
+                                }
+                                // Check for bin full messages and play sounds
+                                else if (cleanLine === 'dry_full') {
+                                    onBinFull('Dry', 'dry_waste_full.mp3');
+                                }
+                                else if (cleanLine === 'wet_full') {
+                                    onBinFull('Wet', 'wet_waste_full.mp3');
+                                }
+                                else if (cleanLine === 'medical_full') {
+                                    onBinFull('Medical', 'med_waste_full.mp3');
+                                }
+                                else if (cleanLine === 'ewaste_full') {
+                                    onBinFull('E-Waste', 'e-waste_full.mp3');
                                 }
                             }
                         }
@@ -976,6 +1155,196 @@
             }
         }
 
+        // --- Visual Detection Logic ---
+
+        let visualAutoEnabled = false;
+        let visualInterval = null;
+        let bgCanvas = document.createElement('canvas');
+        let bgCtx = bgCanvas.getContext('2d', { willReadFrequently: true });
+        let diffCanvas = document.createElement('canvas'); // For current frame
+        let diffCtx = diffCanvas.getContext('2d', { willReadFrequently: true });
+
+        // Small resolution for performance
+        const SCAN_W = 64;
+        const SCAN_H = 48;
+        bgCanvas.width = SCAN_W;
+        bgCanvas.height = SCAN_H;
+        diffCanvas.width = SCAN_W;
+        diffCanvas.height = SCAN_H;
+
+        let calibratedData = null;
+        let isObjectDetected = false;
+        let stabilityCounter = 0; // Confirm object is static before snapping
+
+        function toggleVisualAuto() {
+            visualAutoEnabled = !visualAutoEnabled;
+            const btn = document.getElementById('btnVisualAuto');
+            const dot = document.getElementById('visualAutoDot');
+            const calBtn = document.getElementById('btnCalibrate');
+
+            if (visualAutoEnabled) {
+                btn.innerHTML = `<span class="status-dot" style="background:var(--success); box-shadow:0 0 8px var(--success)"></span> Visual Trigger: ON`;
+                btn.style.borderColor = "var(--success)";
+                calBtn.style.display = 'block';
+
+                // Start Loop
+                if (!visualInterval) visualInterval = setInterval(monitorVisualChange, 200); // Check 5 times a second
+
+                // Auto calibrate ALWAYS when enabled to avoid ghost triggers
+                calibrateBackground();
+                document.getElementById('visualStatus').textContent = "Auto-calibrated. Scanning...";
+
+            } else {
+                btn.innerHTML = `<span class="status-dot"></span> Visual Trigger: OFF`;
+                btn.style.borderColor = "";
+                calBtn.style.display = 'none';
+                document.getElementById('visualStatus').textContent = "";
+
+                if (visualInterval) {
+                    clearInterval(visualInterval);
+                    visualInterval = null;
+                }
+            }
+        }
+
+        function calibrateBackground() {
+            if (!video.srcObject) return;
+
+            // Only capture the circular center area (200px diameter circle)
+            const videoWidth = video.videoWidth;
+            const videoHeight = video.videoHeight;
+            const centerX = videoWidth / 2;
+            const centerY = videoHeight / 2;
+            const radius = 100; // 200px diameter circle
+
+            // Create a temporary canvas to extract just the circular region
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = radius * 2;
+            tempCanvas.height = radius * 2;
+            const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+
+            // Draw the circular region from video
+            tempCtx.drawImage(
+                video,
+                centerX - radius, centerY - radius, radius * 2, radius * 2,
+                0, 0, radius * 2, radius * 2
+            );
+
+            // Now scale it down to our scan resolution and store
+            bgCtx.drawImage(tempCanvas, 0, 0, SCAN_W, SCAN_H);
+            calibratedData = bgCtx.getImageData(0, 0, SCAN_W, SCAN_H).data;
+
+            const btn = document.getElementById('btnCalibrate');
+            btn.innerHTML = "✅ Calibrated! (Reset)";
+            setTimeout(() => btn.innerHTML = "📸 Calibrate Empty Plate", 2000);
+
+            document.getElementById('visualStatus').textContent = "Circle area calibrated. Place object now.";
+            isObjectDetected = false; // Reset state
+        }
+
+        function monitorVisualChange() {
+            if (!visualAutoEnabled || isProcessing || !calibratedData || isSorting || isAudioPlaying) return;
+
+            // 1. Get current frame - only the circular center area
+            const videoWidth = video.videoWidth;
+            const videoHeight = video.videoHeight;
+            const centerX = videoWidth / 2;
+            const centerY = videoHeight / 2;
+            const radius = 100; // Same 200px diameter circle as calibration
+
+            // Create a temporary canvas to extract just the circular region
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = radius * 2;
+            tempCanvas.height = radius * 2;
+            const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+
+            // Draw the circular region from video
+            tempCtx.drawImage(
+                video,
+                centerX - radius, centerY - radius, radius * 2, radius * 2,
+                0, 0, radius * 2, radius * 2
+            );
+
+            // Scale it down to our scan resolution
+            diffCtx.drawImage(tempCanvas, 0, 0, SCAN_W, SCAN_H);
+            const currentData = diffCtx.getImageData(0, 0, SCAN_W, SCAN_H).data;
+
+            // 2. Compare with calibratedData
+            let diffScore = 0;
+            const totalPixels = SCAN_W * SCAN_H;
+            const threshold = 35; // Sensitivity per pixel channel
+
+            for (let i = 0; i < currentData.length; i += 4) {
+                const rDiff = Math.abs(currentData[i] - calibratedData[i]);
+                const gDiff = Math.abs(currentData[i + 1] - calibratedData[i + 1]);
+                const bDiff = Math.abs(currentData[i + 2] - calibratedData[i + 2]);
+
+                if (rDiff + gDiff + bDiff > threshold * 3) {
+                    diffScore++;
+                }
+            }
+
+            // 3. Logic
+            const changePercent = (diffScore / totalPixels) * 100;
+            const TRIGGER_PERCENT = 8; // If 8% of image changes, assume object
+
+            const statusLabel = document.getElementById('visualStatus');
+
+            if (changePercent > TRIGGER_PERCENT) {
+                // Object (or hand) is there
+                statusLabel.textContent = `Change detected: ${Math.round(changePercent)}%`;
+                statusLabel.style.color = "var(--accent-2)";
+
+                if (!isObjectDetected) {
+                    stabilityCounter++;
+                    // Wait for consistency (e.g. 3 checks = 600ms) to ensure it's not a passing hand
+                    if (stabilityCounter > 3) {
+                        isObjectDetected = true; // Lock immediately
+
+                        // User requested delay to avoid capturing hand
+                        statusLabel.innerHTML = `Object Detected! <br>Capturing in 2s...`;
+                        statusLabel.style.color = "var(--warning)";
+
+                        setTimeout(() => {
+                            // Double check if processing already started? No, isProcessing handles that.
+                            // Just trigger.
+                            console.log("Visual Trigger! Capturing now...");
+                            captureAndAnalyze();
+                        }, 2000);
+
+                        stabilityCounter = 0;
+                    }
+                }
+            } else {
+                // Return to empty
+                statusLabel.textContent = "Waiting for object...";
+                statusLabel.style.color = "rgba(255,255,255,0.5)";
+                isObjectDetected = false; // Reset lock so we can capture again
+                stabilityCounter = 0;
+            }
+        }
+
+        function onBinFull(type, sound) {
+            console.log(`Bin Full: ${type}`);
+            playSound(sound);
+
+            // STOP Scanner so user can clear the plate safely
+            if (visualAutoEnabled) {
+                toggleVisualAuto(); // Turn OFF logic
+
+                // Override UI to show specific "Bin Full" warning
+                const btn = document.getElementById('btnVisualAuto');
+                const status = document.getElementById('visualStatus');
+
+                if (btn) {
+                    btn.innerHTML = `<span class="status-dot" style="background:var(--error); box-shadow:0 0 8px var(--error)"></span> 🛑 Stopped: Bin Full`;
+                    btn.style.borderColor = "var(--error)";
+                }
+                if (status) {
+                    status.innerHTML = `<div style="color:var(--error); font-weight:bold; margin-top:5px;">⚠️ ${type} Bin Full!</div><div style="font-size:11px; opacity:0.8">Scanner paused. Clear plate > Resume.</div>`;
+                }
+            }
+        }
     </script>
 </body>
 

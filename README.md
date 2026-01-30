@@ -1,2 +1,1 @@
-# naavi.github.io
-Naavi's work
+https://roboticschools.github.io/AI_Vison_Smart_Dustbin/
